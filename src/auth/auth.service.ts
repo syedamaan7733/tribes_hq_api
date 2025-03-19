@@ -1,4 +1,9 @@
-import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -42,16 +47,16 @@ export class AuthService {
     });
 
     const savedUser = await newUser.save();
-    
+
     // Generate JWT token
     const token = this.generateToken(savedUser);
-    
+
     // Log the token
     await this.logToken(token, savedUser._id);
-    
+
     // Return user data without password
     const userResponse = this.sanitizeUser(savedUser);
-    
+
     return {
       message: 'User registered successfully',
       user: userResponse,
@@ -83,13 +88,13 @@ export class AuthService {
 
     // Generate JWT token
     const token = this.generateToken(user);
-    
+
     // Log the token
     await this.logToken(token, user._id);
-    
+
     // Return user data without password
     const userResponse = this.sanitizeUser(user);
-    
+
     return {
       message: 'Login successful',
       user: userResponse,
@@ -118,21 +123,13 @@ export class AuthService {
   }
 
   private generateToken(user: UserDocument): string {
-    const payload = { 
-      username: user.username, 
+    const payload = {
+      username: user.username,
       sub: user._id,
-      role: user.role
+      role: user.role,
     };
-    
-    const token = this.jwtService.sign(payload);
-    
-    // Include the token itself in the payload for validation
-    const finalPayload = { 
-      ...payload, 
-      token 
-    };
-    
-    return this.jwtService.sign(finalPayload);
+
+    return this.jwtService.sign(payload);
   }
 
   private async logToken(token: string, userId: any): Promise<void> {
@@ -140,7 +137,7 @@ export class AuthService {
       token,
       user: userId,
     });
-    
+
     await newTokenLog.save();
   }
 
