@@ -101,7 +101,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Invalid or expired Token');
     }
 
-    const user = await this.userModel.findById(payload.sub);
+    const user = await this.userModel
+      .findById(payload.sub)
+      .select('-passwordHash');
 
     if (!user) throw new UnauthorizedException('Unauthorized Token');
     console.log(user);
